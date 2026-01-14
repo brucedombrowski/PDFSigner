@@ -32,7 +32,7 @@ This document follows the Software Version Description (SVD) format specified in
 - [CHANGELOG.md](CHANGELOG.md) - Detailed version history
 - [AGENTS.md](AGENTS.md) - Developer documentation
 - [LICENSE](LICENSE) - MIT License terms
-- [MIL-STD-498](https://www.dau.edu/acquipedia-article/mil-std-498) - Software Development and Documentation
+- [MIL-STD-498](http://everyspec.com/MIL-STD/MIL-STD-0300-0499/MIL-STD-498_25500/) - Software Development and Documentation
 
 ---
 
