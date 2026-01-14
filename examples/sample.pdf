@@ -1,41 +1,74 @@
-%PDF-1.4
+%PDF-1.3
+%“Œ‹ž ReportLab Generated PDF document (opensource)
 1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
+<<
+/F1 2 0 R /F2 3 0 R
+>>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
 endobj
 3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
 endobj
 4 0 obj
-<< /Length 186 >>
-stream
-BT
-/F1 24 Tf
-100 700 Td
-(PDFSigner Example Document) Tj
-0 -40 Td
-/F1 12 Tf
-(This is a sample PDF file for testing digital signatures.) Tj
-0 -20 Td
-(Use this file to test the PDFSigner tool.) Tj
-ET
-endstream
+<<
+/Contents 8 0 R /MediaBox [ 0 0 612 792 ] /Parent 7 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
 endobj
 5 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+<<
+/PageMode /UseNone /Pages 7 0 R /Type /Catalog
+>>
+endobj
+6 0 obj
+<<
+/Author (anonymous) /CreationDate (D:20260114145143-06'00') /Creator (anonymous) /Keywords () /ModDate (D:20260114145143-06'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (unspecified) /Title (untitled) /Trapped /False
+>>
+endobj
+7 0 obj
+<<
+/Count 1 /Kids [ 4 0 R ] /Type /Pages
+>>
+endobj
+8 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 259
+>>
+stream
+Gas3.d0d`5(^8jpT&O!UOA-T-?,l.Z.**4/VIjWsoH3`#X_lR>#Y!g)hsol#R`4%Q;?@eoq2U(88->Hh'QT8:*4<>-87/o0Z.15b4g>]'-4+4>nM)sMB>"f-5#ce\1pZCEQeKmknch+&PJ=.&jC6N!o'.EfXUmSaR-e:]!7I""\&b+_U^G&;=A^)\AD^rc2!rX@-jt@C`\h;gWG:=sZQf$c3;NaM"!7S2mFQRncLaKu5@sTE?oG@!)_`*l!?3P#8,~>endstream
 endobj
 xref
-0 6
-0000000000 65535 f
-0000000009 00000 n
-0000000058 00000 n
-0000000115 00000 n
-0000000266 00000 n
-0000000504 00000 n
+0 9
+0000000000 65535 f 
+0000000061 00000 n 
+0000000102 00000 n 
+0000000209 00000 n 
+0000000321 00000 n 
+0000000514 00000 n 
+0000000582 00000 n 
+0000000843 00000 n 
+0000000902 00000 n 
 trailer
-<< /Size 6 /Root 1 0 R >>
+<<
+/ID 
+[<9c0209ad5539f3592ae48416bc637aa9><9c0209ad5539f3592ae48416bc637aa9>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 6 0 R
+/Root 5 0 R
+/Size 9
+>>
 startxref
-579
+1251
 %%EOF
