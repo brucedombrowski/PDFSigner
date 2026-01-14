@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Release
+        run: dotnet build --no-restore -c Release
+
+      - name: Publish
+        run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true --no-build
+
+      - name: Prepare release files
+        run: |
+          mkdir release
+          copy bin\Release\net6.0-windows\win-x64\publish\PdfSigner.exe release\
+          copy sign.bat release\
+          copy examples\sample.pdf release\
+          copy README.md release\
+          copy LICENSE release\
+
+      - name: Create ZIP
+        run: Compress-Archive -Path release\* -DestinationPath PdfSigner-${{ github.ref_name }}-win-x64.zip
+
+      - name: Generate SHA256
+        run: |
+          $hash = Get-FileHash -Algorithm SHA256 PdfSigner-${{ github.ref_name }}-win-x64.zip
+          "$($hash.Hash)  PdfSigner-${{ github.ref_name }}-win-x64.zip" | Out-File -FilePath checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            PdfSigner-${{ github.ref_name }}-win-x64.zip
+            checksums.txt
+          generate_release_notes: true
+          draft: false
+          prerelease: false

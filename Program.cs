@@ -27,6 +27,7 @@ namespace PdfSignerApp
                 Console.WriteLine();
                 Console.WriteLine("Options:");
                 Console.WriteLine("  --list     List available signing certificates");
+                Console.WriteLine("  --verify   Verify signatures on a PDF");
                 Console.WriteLine("  --gui      Use graphical certificate picker dialog");
                 Console.WriteLine("  --console  Use console certificate picker (default)");
                 Console.WriteLine();
@@ -37,6 +38,16 @@ namespace PdfSignerApp
             {
                 ListCertificates();
                 return 0;
+            }
+
+            if (args[0] == "--verify")
+            {
+                if (args.Length < 2)
+                {
+                    Console.WriteLine("Usage: PdfSigner.exe --verify <document.pdf>");
+                    return 1;
+                }
+                return VerifySignatures(args[1]);
             }
 
             // Parse arguments
@@ -495,6 +506,120 @@ namespace PdfSignerApp
             }
 
             return selected[0];
+        }
+
+        static int VerifySignatures(string pdfPath)
+        {
+            if (!File.Exists(pdfPath))
+            {
+                Console.WriteLine($"Error: File not found: {pdfPath}");
+                return 1;
+            }
+
+            try
+            {
+                using var reader = new PdfReader(pdfPath);
+                using var doc = new PdfDocument(reader);
+                var signatureUtil = new SignatureUtil(doc);
+                var signatureNames = signatureUtil.GetSignatureNames();
+
+                if (signatureNames.Count == 0)
+                {
+                    Console.WriteLine("No signatures found in this document.");
+                    return 0;
+                }
+
+                Console.WriteLine($"Found {signatureNames.Count} signature(s):");
+                Console.WriteLine();
+
+                bool allValid = true;
+                int index = 0;
+
+                foreach (var name in signatureNames)
+                {
+                    index++;
+                    Console.WriteLine($"=== Signature {index}: {name} ===");
+
+                    var pkcs7 = signatureUtil.ReadSignatureData(name);
+                    if (pkcs7 == null)
+                    {
+                        Console.WriteLine("  Status: INVALID (could not read signature data)");
+                        allValid = false;
+                        Console.WriteLine();
+                        continue;
+                    }
+
+                    // Get signer certificate info
+                    var signerCert = pkcs7.GetSigningCertificate();
+                    if (signerCert != null)
+                    {
+                        // Access certificate through iText's wrapper
+                        string subject = signerCert.GetSubjectDN()?.ToString() ?? "Unknown";
+                        string issuer = signerCert.GetIssuerDN()?.ToString() ?? "Unknown";
+
+                        // Extract CN from subject
+                        string cn = subject;
+                        if (subject.Contains("CN="))
+                        {
+                            int start = subject.IndexOf("CN=") + 3;
+                            int end = subject.IndexOf(',', start);
+                            cn = end > 0 ? subject.Substring(start, end - start) : subject.Substring(start);
+                        }
+
+                        Console.WriteLine($"  Signer: {cn}");
+                        Console.WriteLine($"  Issuer: {issuer}");
+                    }
+
+                    // Get signing time
+                    var signDate = pkcs7.GetSignDate();
+                    if (signDate != DateTime.MinValue)
+                    {
+                        Console.WriteLine($"  Signed: {signDate:yyyy-MM-dd HH:mm:ss}");
+                    }
+
+                    // Verify integrity (document not modified since signing)
+                    bool integrityValid = pkcs7.VerifySignatureIntegrityAndAuthenticity();
+
+                    // Check if signature covers whole document
+                    bool coversWholeDoc = signatureUtil.SignatureCoversWholeDocument(name);
+
+                    if (integrityValid && coversWholeDoc)
+                    {
+                        Console.WriteLine("  Status: VALID");
+                        Console.WriteLine("  Integrity: Document has not been modified since signing");
+                    }
+                    else if (integrityValid && !coversWholeDoc)
+                    {
+                        Console.WriteLine("  Status: VALID (partial)");
+                        Console.WriteLine("  Note: Document was modified after this signature (additional signatures added)");
+                    }
+                    else
+                    {
+                        Console.WriteLine("  Status: INVALID");
+                        Console.WriteLine("  Warning: Signature integrity check failed");
+                        allValid = false;
+                    }
+
+                    Console.WriteLine();
+                }
+
+                // Summary
+                if (allValid)
+                {
+                    Console.WriteLine("All signatures are valid.");
+                    return 0;
+                }
+                else
+                {
+                    Console.WriteLine("WARNING: One or more signatures failed validation.");
+                    return 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error verifying signatures: {ex.Message}");
+                return 1;
+            }
         }
 
         static void SignPdf(string inputPath, string outputPath, X509Certificate2 cert)

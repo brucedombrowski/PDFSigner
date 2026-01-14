@@ -1,76 +1,81 @@
 # PdfSigner
 
-A lightweight Windows tool for digitally signing PDFs using certificates from the Windows Certificate Store, including PIV/CAC smart cards.
+Sign PDF documents with your smart card (PIV/CAC badge) or software certificate on Windows.
 
-## Features
+## Quick Start
 
-- **Smart Card Support**: Works with PIV/CAC badges (DOD, NASA, FPKI, etc.)
-- **Multi-Signature Support**: Add multiple signatures to a single PDF
-- **Certificate Filtering**:
-  - Shows only valid document signing certificates
-  - Filters by Email Protection or Document Signing EKU
-  - Excludes VPN/network security certs, device certs, and authentication-only certs
-- **Two Selection Modes**:
-  - Console: Text-based certificate picker with grouping
-  - GUI: Native Windows certificate selection dialog (`--gui`)
-- **Zero Dependencies**: Self-contained executable (~72MB), no Java or runtime installation required
+**Easiest way to sign a PDF:**
 
-## Usage
+1. Download `PdfSigner.exe` and `sign.bat` to the same folder
+2. Drag your PDF onto `sign.bat`
+3. Select your certificate from the popup
+4. Enter your PIN when prompted (for smart cards)
+5. Done! Your signed PDF is saved as `filename_signed.pdf`
+
+## Requirements
+
+- Windows 10 or 11
+- Your smart card reader and badge (PIV/CAC), OR a software certificate installed
+
+## Usage Options
+
+### Drag and Drop (Easiest)
+Drag a PDF file onto `sign.bat` - a Windows dialog will open to select your certificate.
+
+### Command Line
 
 ```powershell
-# Console mode (default) - text-based certificate selection
-.\PdfSigner.exe document.pdf
-
-# GUI mode - native Windows certificate picker (recommended)
+# Sign with GUI certificate picker (recommended)
 .\PdfSigner.exe document.pdf --gui
 
-# Custom output filename
-.\PdfSigner.exe input.pdf output_signed.pdf
+# Sign with console-based picker
+.\PdfSigner.exe document.pdf
 
-# List all certificates
-.\PdfSigner.exe --list
+# Specify output filename
+.\PdfSigner.exe input.pdf output_signed.pdf
 
 # Verify signatures on a PDF
 .\PdfSigner.exe --verify document_signed.pdf
+
+# List available certificates
+.\PdfSigner.exe --list
 ```
-
-## Output
-
-- Creates `<filename>_signed.pdf` (or custom output name)
-- Windows Security prompts for PIN when using smart card certificates
-- Adding a signature to an already-signed PDF preserves existing signatures
-
-## Certificate Selection
-
-Certificates are filtered to show only those that:
-- Are not expired
-- Have Digital Signature key usage
-- Have Email Protection (1.3.6.1.5.5.7.3.4) or Document Signing (1.3.6.1.4.1.311.10.3.12) EKU
-- Are person certificates (not device/machine certificates)
-- Are not from VPN/network security vendors (Palo Alto, Cisco, Zscaler, etc.)
-
-Certificates are grouped by type:
-1. **PIV/CAC**: Government smart card certificates (shown first, recommended)
-2. **Other**: Software certificates, self-signed test certificates
 
 ## Multi-Signature Workflow
 
-PDFs can have multiple signatures for multi-party approval workflows:
+Need multiple people to sign the same document? Each person signs in turn:
 
 ```powershell
-# First signature
+# Person 1 signs
 .\PdfSigner.exe document.pdf --gui
-# Creates document_signed.pdf with Signature1
+# Creates document_signed.pdf
 
-# Second signature (different badge/cert)
+# Person 2 signs the already-signed PDF
 .\PdfSigner.exe document_signed.pdf --gui
-# Updates document_signed.pdf with Signature2
+# Adds second signature, keeps first signature intact
 
 # Verify all signatures
 .\PdfSigner.exe --verify document_signed.pdf
 ```
 
-## Building
+## Certificate Selection
+
+The tool automatically filters to show only certificates suitable for document signing:
+- Valid (not expired)
+- PIV/CAC smart card certificates are shown first
+- VPN and device certificates are hidden
+
+## Output
+
+- Creates `<filename>_signed.pdf` in the same folder (or your specified name)
+- Windows will prompt for your smart card PIN when signing
+- Open in Adobe Reader to see signature details
+
+---
+
+## For Developers
+
+### Building from Source
 
 Requires .NET 6.0 SDK (or later).
 
@@ -87,26 +92,24 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 ### Cross-Compile from macOS/Linux
 
 ```bash
-cd PdfSigner
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-# Output: bin/Release/net6.0-windows/win-x64/publish/PdfSigner.exe
 ```
 
-## Dependencies
+### Dependencies
 
 NuGet packages (automatically restored):
 - `itext7` (8.0.2) - PDF manipulation and signing
 - `itext7.bouncy-castle-adapter` (8.0.2) - Cryptographic operations
 - `System.Windows.Extensions` (8.0.0) - Certificate UI dialog
 
-## Target Environment
+### Target Environment
 
 Designed for **airgapped Windows 11** systems with security hardening:
 - CIS Windows 11 Enterprise baseline
 - DISA STIG Windows 11 baseline
 - Microsoft Security Baseline
 
-## Related
+### Related Projects
 
 Used by [DecisionDocument](https://github.com/brucedombrowski/LaTeX) for signing LaTeX-generated PDF decision documents.
 

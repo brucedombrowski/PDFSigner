@@ -21,8 +21,15 @@ PdfSigner/
 ├── PdfSigner.csproj     # .NET project file
 ├── README.md            # User documentation
 ├── AGENTS.md            # This file
+├── CHANGELOG.md         # Version history
 ├── LICENSE              # MIT License
-└── .gitignore           # Git ignore rules
+├── sign.bat             # Drag-and-drop signing script
+├── .gitignore           # Git ignore rules
+├── .github/workflows/   # CI/CD automation
+│   ├── build.yml        # Build and format check
+│   └── release.yml      # Release automation
+└── examples/
+    └── sample.pdf       # Example PDF for testing
 ```
 
 ## Code Architecture
@@ -48,6 +55,9 @@ The application is a single-file C# console application with these key component
 - `SignPdf()` - Core signing logic using iText7
 - `GetNextSignatureFieldName()` - Generates unique field names for multi-sig
 - `X509Certificate2Signature` - Bridges .NET certs to iText signature interface
+
+### Signature Verification
+- `VerifySignatures()` - Validates all signatures on a PDF, checks integrity
 
 ## Certificate Filtering Logic
 
@@ -136,6 +146,9 @@ After modifying Program.cs:
 
 # Add second signature
 .\PdfSigner.exe document_signed.pdf --gui
+
+# Verify signatures
+.\PdfSigner.exe --verify document_signed.pdf
 ```
 
 ## Common Tasks
@@ -172,3 +185,27 @@ This tool is used by [DecisionDocument](https://github.com/brucedombrowski/LaTeX
 - XML doc comments for public classes
 - Descriptive variable names
 - Guard clauses for early returns
+- Run `dotnet format` before committing
+
+## CI/CD
+
+- **Build workflow**: Runs on every push/PR to main
+  - Restores dependencies
+  - Checks code formatting (`dotnet format --verify-no-changes`)
+  - Builds release configuration
+  - Uploads artifact
+
+- **Release workflow**: Runs when a version tag is pushed (e.g., `v1.0.0`)
+  - Builds and publishes self-contained executable
+  - Creates ZIP with executable, sign.bat, sample PDF, README, LICENSE
+  - Generates SHA256 checksum
+  - Creates GitHub Release with auto-generated notes
+
+### Creating a Release
+
+```bash
+# Tag the release
+git tag v1.0.0
+git push origin v1.0.0
+# GitHub Actions will automatically create the release
+```
