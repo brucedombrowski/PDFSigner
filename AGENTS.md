@@ -134,7 +134,6 @@ After modifying Program.cs:
 1. **Build**: `dotnet build`
 2. **Test on Windows**: Copy to Windows and test with:
    - PIV/CAC smart card
-   - Software certificate
    - Multi-signature (sign same PDF twice)
 3. **Verify output**: Check signed PDF in Adobe Reader
 

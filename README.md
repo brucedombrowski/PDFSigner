@@ -17,7 +17,7 @@ This Software Version Description (SVD) identifies and describes version 1.0.4 o
 
 ### 1.2 System Overview
 
-PdfSigner enables users to apply digital signatures to PDF documents using PIV/CAC smart cards or software certificates. The tool supports multi-signature workflows where multiple individuals sign a single document sequentially.
+PdfSigner enables users to apply digital signatures to PDF documents using PIV/CAC smart cards. The tool supports multi-signature workflows where multiple individuals sign a single document sequentially.
 
 ### 1.3 Document Overview
 
