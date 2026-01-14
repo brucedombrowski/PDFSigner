@@ -1,0 +1,23 @@
+# .NET build artifacts
+bin/
+obj/
+*.pdb
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Certificate and key files (NEVER commit private keys)
+*.pem
+*.p12
+*.pfx
+*.key
+*.crt
+*.cer
+
+# IDE
+.vs/
+.vscode/
+*.user
