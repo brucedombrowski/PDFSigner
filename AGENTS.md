@@ -36,8 +36,12 @@ PdfSigner/
 
 The application is a single-file C# console application with these key components:
 
+### Constants
+- `EmailProtectionEku` - OID `1.3.6.1.5.5.7.3.4` for S/MIME signing
+- `DocumentSigningEku` - OID `1.3.6.1.4.1.311.10.3.12` for document signing
+
 ### Main Entry Point
-- `Main()` - Parses arguments, handles `--list`, `--verify`, `--gui` flags
+- `Main()` - Parses arguments, handles `--list`, `--verify`, `--gui` flags, displays version banner
 - `GetOutputPath()` - Generates `_signed.pdf` output filename
 
 ### Certificate Filtering
@@ -50,6 +54,7 @@ The application is a single-file C# console application with these key component
 ### Certificate Selection
 - `SelectSigningCertificate()` - Console-based picker with grouping
 - `SelectSigningCertificateGui()` - Native Windows certificate dialog
+- `PrintNoCertificatesMessage()` - Displays helpful error when no valid certs found
 
 ### PDF Signing
 - `SignPdf()` - Core signing logic using iText7
@@ -58,6 +63,7 @@ The application is a single-file C# console application with these key component
 
 ### Signature Verification
 - `VerifySignatures()` - Validates all signatures on a PDF, checks integrity
+- Uses `ExtractCommonName()` for consistent signer name display
 
 ## Certificate Filtering Logic
 
@@ -66,8 +72,8 @@ Certificates must pass ALL of these filters:
 1. **Not expired**: `cert.NotAfter >= DateTime.Now`
 2. **Digital Signature key usage**: X509KeyUsageFlags.DigitalSignature
 3. **Correct EKU** (one of):
-   - `1.3.6.1.5.5.7.3.4` - Email Protection (S/MIME signing)
-   - `1.3.6.1.4.1.311.10.3.12` - Document Signing
+   - `EmailProtectionEku` (`1.3.6.1.5.5.7.3.4`) - S/MIME signing
+   - `DocumentSigningEku` (`1.3.6.1.4.1.311.10.3.12`) - Document Signing
 4. **Person certificate**: Not device/machine/system cert
 5. **Not excluded issuer**: Not from VPN/network security vendors
 
