@@ -3,7 +3,7 @@
 ## Software Version Description (SVD)
 
 **Document Identifier:** PdfSigner-SVD
-**Version:** 1.0.3
+**Version:** 1.0.4
 **Date:** 2026-01-14
 **Classification:** UNCLASSIFIED
 
@@ -13,7 +13,7 @@
 
 ### 1.1 Identification
 
-This Software Version Description (SVD) identifies and describes version 1.0.3 of PdfSigner, a Windows application for digitally signing PDF documents using certificates from the Windows Certificate Store.
+This Software Version Description (SVD) identifies and describes version 1.0.4 of PdfSigner, a Windows application for digitally signing PDF documents using certificates from the Windows Certificate Store.
 
 ### 1.2 System Overview
 
@@ -57,10 +57,9 @@ This document provides version identification, installation procedures, operatio
 
 ### 3.3 Changes Installed
 
-**Version 1.0.3** (Current Release):
-- Display version number in startup banner
-- Extract EKU OIDs to named constants
-- DRY refactor: reuse certificate error message and CN extraction
+**Version 1.0.4** (Current Release):
+- Restructure README.md to MIL-STD-498 SVD/VDD format
+- Update AGENTS.md with v1.0.3 code architecture changes
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
