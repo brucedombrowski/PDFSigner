@@ -513,14 +513,40 @@ namespace PdfSignerApp
             using var reader = new PdfReader(inputPath);
             using var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
 
-            var signer = new iText.Signatures.PdfSigner(reader, outputStream, new StampingProperties());
+            // Use append mode for already-signed PDFs to preserve existing signatures
+            var stampingProperties = new StampingProperties();
+            stampingProperties.UseAppendMode();
 
-            // Set signature field name
-            signer.SetFieldName("Signature1");
+            var signer = new iText.Signatures.PdfSigner(reader, outputStream, stampingProperties);
+
+            // Generate unique signature field name
+            // Check existing signatures and increment the number
+            string fieldName = GetNextSignatureFieldName(inputPath);
+            signer.SetFieldName(fieldName);
+
+            Console.WriteLine($"Adding signature field: {fieldName}");
 
             // Perform the signature - this triggers the PIN dialog for smart cards
             signer.SignDetached(externalSignature, chain, null, null, null, 0,
                 iText.Signatures.PdfSigner.CryptoStandard.CMS);
+        }
+
+        static string GetNextSignatureFieldName(string inputPath)
+        {
+            // Check for existing signature fields by opening a separate reader
+            using var tempReader = new PdfReader(inputPath);
+            using var tempDoc = new PdfDocument(tempReader);
+            var signatureUtil = new SignatureUtil(tempDoc);
+            var existingSignatures = signatureUtil.GetSignatureNames();
+
+            // Find the next available signature number
+            int nextNumber = 1;
+            while (existingSignatures.Contains($"Signature{nextNumber}"))
+            {
+                nextNumber++;
+            }
+
+            return $"Signature{nextNumber}";
         }
     }
 
