@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using iText.Kernel.Pdf;
@@ -13,10 +14,15 @@ namespace PdfSignerApp
 {
     class Program
     {
+        // EKU OIDs for document signing
+        const string EmailProtectionEku = "1.3.6.1.5.5.7.3.4";
+        const string DocumentSigningEku = "1.3.6.1.4.1.311.10.3.12";
+
         static int Main(string[] args)
         {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
             Console.WriteLine("==========================================");
-            Console.WriteLine("PDF Digital Signature Tool");
+            Console.WriteLine($"PDF Digital Signature Tool v{version?.Major}.{version?.Minor}.{version?.Build}");
             Console.WriteLine("Uses Windows Certificate Store (PIV/CAC)");
             Console.WriteLine("==========================================");
             Console.WriteLine();
@@ -223,8 +229,7 @@ namespace PdfSignerApp
                     foreach (var oid in eku.EnhancedKeyUsages)
                     {
                         // Only accept document signing related EKUs
-                        if (oid.Value == "1.3.6.1.5.5.7.3.4" ||       // Email Protection (S/MIME signing)
-                            oid.Value == "1.3.6.1.4.1.311.10.3.12")   // Document Signing
+                        if (oid.Value == EmailProtectionEku || oid.Value == DocumentSigningEku)
                         {
                             return true;
                         }
@@ -371,6 +376,21 @@ namespace PdfSignerApp
             }
         }
 
+        static void PrintNoCertificatesMessage(bool showListHint = true)
+        {
+            Console.WriteLine("No valid signing certificates found.");
+            Console.WriteLine();
+            Console.WriteLine("Certificates must be:");
+            Console.WriteLine("  - Not expired");
+            Console.WriteLine("  - Have Digital Signature key usage");
+            Console.WriteLine();
+            Console.WriteLine("Ensure your smart card is inserted and recognized by Windows.");
+            if (showListHint)
+            {
+                Console.WriteLine("Run with --list to see all certificates.");
+            }
+        }
+
         static X509Certificate2? SelectSigningCertificate()
         {
             // Get filtered certs (valid, with signing capability)
@@ -378,14 +398,7 @@ namespace PdfSignerApp
 
             if (certs.Count == 0)
             {
-                Console.WriteLine("No valid signing certificates found.");
-                Console.WriteLine();
-                Console.WriteLine("Certificates must be:");
-                Console.WriteLine("  - Not expired");
-                Console.WriteLine("  - Have Digital Signature key usage");
-                Console.WriteLine();
-                Console.WriteLine("Ensure your smart card is inserted and recognized by Windows.");
-                Console.WriteLine("Run with --list to see all certificates.");
+                PrintNoCertificatesMessage();
                 return null;
             }
 
@@ -472,13 +485,7 @@ namespace PdfSignerApp
 
             if (certs.Count == 0)
             {
-                Console.WriteLine("No valid signing certificates found.");
-                Console.WriteLine();
-                Console.WriteLine("Certificates must be:");
-                Console.WriteLine("  - Not expired");
-                Console.WriteLine("  - Have Digital Signature key usage");
-                Console.WriteLine();
-                Console.WriteLine("Ensure your smart card is inserted and recognized by Windows.");
+                PrintNoCertificatesMessage(showListHint: false);
                 return null;
             }
 
@@ -553,21 +560,11 @@ namespace PdfSignerApp
                     var signerCert = pkcs7.GetSigningCertificate();
                     if (signerCert != null)
                     {
-                        // Access certificate through iText's wrapper
                         string subject = signerCert.GetSubjectDN()?.ToString() ?? "Unknown";
                         string issuer = signerCert.GetIssuerDN()?.ToString() ?? "Unknown";
 
-                        // Extract CN from subject
-                        string cn = subject;
-                        if (subject.Contains("CN="))
-                        {
-                            int start = subject.IndexOf("CN=") + 3;
-                            int end = subject.IndexOf(',', start);
-                            cn = end > 0 ? subject.Substring(start, end - start) : subject.Substring(start);
-                        }
-
-                        Console.WriteLine($"  Signer: {cn}");
-                        Console.WriteLine($"  Issuer: {issuer}");
+                        Console.WriteLine($"  Signer: {ExtractCommonName(subject)}");
+                        Console.WriteLine($"  Issuer: {ExtractCommonName(issuer)}");
                     }
 
                     // Get signing time

@@ -13,9 +13,9 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
     <!-- Version info -->
-    <Version>1.0.2</Version>
-    <FileVersion>1.0.2</FileVersion>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <Version>1.0.3</Version>
+    <FileVersion>1.0.3</FileVersion>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
     <Company>Bruce Dombrowski</Company>
     <Product>PdfSigner</Product>
     <Description>PDF digital signature tool using Windows Certificate Store</Description>
