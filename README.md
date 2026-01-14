@@ -27,6 +27,8 @@ This document provides version identification, installation procedures, operatio
 
 ## 2. Referenced Documents
 
+This document follows the Software Version Description (SVD) format specified in MIL-STD-498.
+
 - [CHANGELOG.md](CHANGELOG.md) - Detailed version history
 - [AGENTS.md](AGENTS.md) - Developer documentation
 - [LICENSE](LICENSE) - MIT License terms
