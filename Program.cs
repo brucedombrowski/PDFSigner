@@ -122,6 +122,23 @@ namespace PdfSignerApp
             "Workstation"
         };
 
+        // Issuers to exclude (VPN, network security, etc. - not for document signing)
+        static readonly string[] ExcludedIssuers = new[]
+        {
+            "Palo Alto",
+            "GlobalProtect",
+            "Cisco",
+            "AnyConnect",
+            "Zscaler",
+            "Fortinet",
+            "FortiClient",
+            "Pulse Secure",
+            "F5",
+            "Citrix",
+            "VMware",
+            "Workspace ONE"
+        };
+
         static List<X509Certificate2> GetSigningCertificates(bool filterForSigning = true)
         {
             var result = new List<X509Certificate2>();
@@ -149,6 +166,10 @@ namespace PdfSignerApp
 
                 // Filter: Must be a person certificate (not device/system)
                 if (!IsPersonCertificate(cert))
+                    continue;
+
+                // Filter: Exclude VPN/network security certs
+                if (IsExcludedIssuer(cert))
                     continue;
 
                 result.Add(cert);
@@ -266,6 +287,18 @@ namespace PdfSignerApp
             {
                 if (issuer.Contains(keyword.ToUpperInvariant()) ||
                     subject.Contains(keyword.ToUpperInvariant()))
+                    return true;
+            }
+            return false;
+        }
+
+        static bool IsExcludedIssuer(X509Certificate2 cert)
+        {
+            string issuer = cert.Issuer.ToUpperInvariant();
+
+            foreach (var keyword in ExcludedIssuers)
+            {
+                if (issuer.Contains(keyword.ToUpperInvariant()))
                     return true;
             }
             return false;
