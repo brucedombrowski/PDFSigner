@@ -32,6 +32,8 @@ Per 15 CFR § 740.13(e)(3), notification of publicly available encryption source
 
 Source code location: https://github.com/brucedombrowski/PdfSigner
 
+Notification submitted: 2026-01-14
+
 ## Restrictions
 
 This software may not be exported or re-exported to:

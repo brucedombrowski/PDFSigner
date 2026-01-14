@@ -3,7 +3,7 @@
 ## Software Version Description (SVD)
 
 **Document Identifier:** PdfSigner-SVD
-**Version:** 1.0.5
+**Version:** 1.0.6
 **Date:** 2026-01-14
 **Classification:** UNCLASSIFIED
 
@@ -13,7 +13,7 @@
 
 ### 1.1 Identification
 
-This Software Version Description (SVD) identifies and describes version 1.0.5 of PdfSigner, a Windows application for digitally signing PDF documents using certificates from the Windows Certificate Store.
+This Software Version Description (SVD) identifies and describes version 1.0.6 of PdfSigner, a Windows application for digitally signing PDF documents using certificates from the Windows Certificate Store.
 
 ### 1.2 System Overview
 
@@ -33,6 +33,7 @@ This document follows the Software Version Description (SVD) format specified in
 - [AGENTS.md](AGENTS.md) - Developer documentation
 - [LICENSE](LICENSE) - MIT License terms
 - [EXPORT.md](EXPORT.md) - Export compliance (ECCN 5D002, License Exception TSU)
+- [Export Compliance Statement](export_compliance_statement.pdf) - Attestation (PDF)
 - [MIL-STD-498](http://everyspec.com/MIL-STD/MIL-STD-0300-0499/MIL-STD-498_25500/) - Software Development and Documentation
 
 ---
@@ -60,8 +61,9 @@ This document follows the Software Version Description (SVD) format specified in
 
 ### 3.3 Changes Installed
 
-**Version 1.0.5** (Current Release):
-- Replace sample PDF with Decision Memorandum from DecisionDocument project
+**Version 1.0.6** (Current Release):
+- Add EXPORT.md with export compliance documentation (ECCN 5D002, License Exception TSU)
+- Add Export Compliance Statement PDF
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
