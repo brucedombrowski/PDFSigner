@@ -159,39 +159,51 @@ namespace PdfSignerApp
 
         static bool HasDigitalSignatureUsage(X509Certificate2 cert)
         {
-            // Check Key Usage extension
+            // Must have Digital Signature in Key Usage extension
+            bool hasDigitalSignatureKeyUsage = false;
             foreach (var ext in cert.Extensions)
             {
                 if (ext is X509KeyUsageExtension keyUsage)
                 {
                     if ((keyUsage.KeyUsages & X509KeyUsageFlags.DigitalSignature) != 0)
-                        return true;
-                }
-            }
-
-            // If no Key Usage extension, check Enhanced Key Usage
-            foreach (var ext in cert.Extensions)
-            {
-                if (ext is X509EnhancedKeyUsageExtension eku)
-                {
-                    // Common signing OIDs
-                    foreach (var oid in eku.EnhancedKeyUsages)
                     {
-                        // Code Signing, Email Protection, Document Signing, Smart Card Logon
-                        if (oid.Value == "1.3.6.1.5.5.7.3.3" ||  // Code Signing
-                            oid.Value == "1.3.6.1.5.5.7.3.4" ||  // Email Protection
-                            oid.Value == "1.3.6.1.4.1.311.10.3.12" ||  // Document Signing
-                            oid.Value == "1.3.6.1.4.1.311.20.2.2")     // Smart Card Logon
-                        {
-                            return true;
-                        }
+                        hasDigitalSignatureKeyUsage = true;
+                        break;
                     }
                 }
             }
 
-            // No usage extensions = assume can sign (older certs)
-            return cert.Extensions.Count == 0 ||
-                   !cert.Extensions.OfType<X509KeyUsageExtension>().Any();
+            // If no Key Usage extension at all, be lenient for older certs
+            if (!cert.Extensions.OfType<X509KeyUsageExtension>().Any())
+            {
+                hasDigitalSignatureKeyUsage = true;
+            }
+
+            if (!hasDigitalSignatureKeyUsage)
+                return false;
+
+            // Now check Enhanced Key Usage - must have Email Protection or Document Signing
+            // Exclude Smart Card Logon and Client Authentication (those are for login, not signing)
+            foreach (var ext in cert.Extensions)
+            {
+                if (ext is X509EnhancedKeyUsageExtension eku)
+                {
+                    foreach (var oid in eku.EnhancedKeyUsages)
+                    {
+                        // Only accept document signing related EKUs
+                        if (oid.Value == "1.3.6.1.5.5.7.3.4" ||       // Email Protection (S/MIME signing)
+                            oid.Value == "1.3.6.1.4.1.311.10.3.12")   // Document Signing
+                        {
+                            return true;
+                        }
+                    }
+                    // Has EKU extension but none match signing - reject
+                    return false;
+                }
+            }
+
+            // No EKU extension = allow (older certs, self-signed test certs)
+            return true;
         }
 
         static bool IsPersonCertificate(X509Certificate2 cert)
